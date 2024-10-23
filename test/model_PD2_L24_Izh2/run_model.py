@@ -40,7 +40,7 @@ sim.gatherData()                  			# gather spiking data and cell info from ea
 # Save the result
 sim.cfg.savePickle = 1
 fpath_res = str(dirpath_work / model_desc[2])
-sim.saveData(include=['netParams', 'simData', 'net'], filename=fpath_res)
+sim.saveData(include=['simConfig', 'netParams', 'simData', 'net'], filename=fpath_res)
 #sim.analysis.plotData()         			# plot spike raster etc
 
 # Visualize the result

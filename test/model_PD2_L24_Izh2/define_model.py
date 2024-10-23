@@ -6,6 +6,8 @@ import sys
 from netpyne import specs, sim
 import numpy as np
 
+sys.path.append(str(Path(__file__).resolve().parents[2]))
+
 import common as cmn
 
 
@@ -35,7 +37,7 @@ cfg.recordCellsSpikes = ['L2e', 'L2i', 'L4e', 'L4i']
 #  Network Constants
 ###########################################################
 
-scale = 0.005
+scale = 0.01
 
 # Probability of connection
 C = np.array([[0.20, 0.33, 0.08, 0.16],
