@@ -70,6 +70,7 @@ class SubnetParamBuilder:
         self._copy_active_pops()
         self._copy_conns()
         self._create_frozen_pops()
+        self._copy_stim_params()
         return self.netpar_sub
         
     def _init_netpar_sub(self):
@@ -83,6 +84,7 @@ class SubnetParamBuilder:
                 self.netpar_sub[key] = deepcopy2(val)
     
     def _get_all_pops(self):
+        """Get all populations of the full model. """
         return list(self.netpar_full['popParams'].keys())
     
     def _get_all_conns(self, par_group='connParams'):
@@ -92,8 +94,9 @@ class SubnetParamBuilder:
         else:
             return []
     
-    #def _get_active_pops(self):
-    #    return self.subnet_desc.pops_active
+    def _get_all_stims(self):
+        """Get all stim. targets of the full model. """
+        return list(self.netpar_full['stimTargetParams'].keys())
     
     def _get_2pop_conns(self, pops_pre, pops_post):
         """Find connections between two sets of pops in the full model. """
@@ -136,6 +139,7 @@ class SubnetParamBuilder:
         self.pops_frozen = list(set(self.pops_frozen))  # unique entries
     
     def _copy_active_pops(self):
+        print('Copy active pops...')
         for pop in self.pops_active:
             self.netpar_sub['popParams'][pop] = (
                 deepcopy2(self.netpar_full['popParams'][pop]))
@@ -153,7 +157,10 @@ class SubnetParamBuilder:
                         pops.append(pop)
             return pops
         else:
-            raise ValueError('Conditions should contain "pop" or "cellType"')
+            s = f'Conditions should contain "pop" or "cellType"\n{conds}'
+            #raise ValueError(s)
+            print(s)
+            return []
     
     def _get_conn_pops_presyn(self, conn, par_group='connParams'):
         """Get pre-synaptic populations of a (sub-)connection (from full model). """
@@ -163,6 +170,11 @@ class SubnetParamBuilder:
     def _get_conn_pops_postsyn(self, conn, par_group='connParams'):
         """"Get post-synaptic populations of a (sub-)connection (from full model). """
         conds = self.netpar_full[par_group][conn]['postConds']
+        return self._get_cond_pops(conds)
+    
+    def _get_stim_pops_postsyn(self, stim):
+        """"Get post-synaptic populations from stimTargetParams. """
+        conds = self.netpar_full['stimTargetParams'][stim]['conds']
         return self._get_cond_pops(conds)
     
     def _rename_conn_pop_presyn(self, conn, pop_old, pop_new, par_group='connParams'):
@@ -189,7 +201,8 @@ class SubnetParamBuilder:
     
     def _copy_conns(self):
         """Copy relevant (sub-)connections from full to subnet model params. """
-        for par_group in ('connParams', 'subCnnParams'):
+        print('Copy connections...')
+        for par_group in ('connParams', 'subConnParams'):
             for conn in self._get_all_conns(par_group):
                 pops_pre = self._get_conn_pops_presyn(conn, par_group)
                 pops_post = self._get_conn_pops_postsyn(conn, par_group)
@@ -214,6 +227,16 @@ class SubnetParamBuilder:
                             conn, pop_pre, pop_pre_frozen, par_group)
                 # Remove inactive post-synaptic populations for the conn
                 self._remove_inact_conn_pops_postsyn(conn, par_group)
+                
+    def _copy_stim_params(self):
+        """Copy relevant entries of stimTargetParams. """
+        print('Copy stim. targets...')
+        for stim in self._get_all_stims():
+            pops_post = self._get_stim_pops_postsyn(stim)
+            # At least one of the stim. targets is active - copy the stim.
+            if lists_intersect(pops_post, self.pops_active):
+                self.netpar_sub['stimTargetParams'][stim] = (
+                    deepcopy2(self.netpar_full['stimTargetParams'][stim]))
     
     def _create_frozen_pops(self):
         for pop in self.pops_frozen:
