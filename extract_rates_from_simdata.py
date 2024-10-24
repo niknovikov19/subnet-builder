@@ -6,7 +6,7 @@ from netpyne import sim
 import numpy as np
 from matplotlib import pyplot as plt
 
-import common as smn
+#import common as smn
 import sim_res_parse_utils as srp
 
 

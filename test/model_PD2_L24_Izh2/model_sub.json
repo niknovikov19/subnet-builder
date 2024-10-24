@@ -125,15 +125,15 @@
         "L4ifrz": {
             "cellType": "FS",
             "numCells": 54,
-            "rate": 27,
-            "noise": 1,
+            "rate": 12.925925925925926,
+            "noise": 1.0,
             "cellModel": "NetStim"
         },
         "L4efrz": {
             "cellType": "PYR",
             "numCells": 219,
-            "rate": 22,
-            "noise": 1,
+            "rate": 5.963470319634703,
+            "noise": 1.0,
             "cellModel": "NetStim"
         }
     },

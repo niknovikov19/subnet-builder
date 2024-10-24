@@ -24,10 +24,10 @@ models_info = {
     'L2_subnet': {'path': 'sim_res_sub'}
     }
 
-recalc_rates = False
+recalc_rates = True
 
 #bins = 10
-bins = np.linspace(0, 20, 10)
+bins = np.linspace(0, 50, 15)
 
 
 def _gen_model_path(model_name, postfix):
@@ -72,20 +72,27 @@ for name, info in models_info.items():
         info['avg_rates'][pop] = np.nanmean(rates)
         info['rate_hist'][pop] = np.histogram(rates, bins=bins, density=True)
         
-pops_vis = ['L2e', 'L2i']
+pops_vis = ['L2e', 'L2i', 'L4e', 'L4i']
 nx = 2
-ny = 1
+ny = 2
 
 plt.figure()
 for n, pop in enumerate(pops_vis):
     plt.subplot(ny, nx, n + 1)
     for model_name, info in models_info.items():
-        h, b = info['rate_hist'][pop]
-        plt.plot(b[:-1], h, label=model_name)
-    plt.xlabel('Firing rate')
+        if pop in info['rate_hist']:
+            h, b = info['rate_hist'][pop]
+            style = '-'
+        else:
+            h, b = info['rate_hist'][pop + 'frz']
+            style = '--'
+        plt.plot(b[:-1], h, style, label=model_name)
     plt.title(pop)
 plt.subplot(ny, nx, 1)
 plt.legend()
+for n in range(nx):
+    plt.subplot(ny, nx, (ny - 1) * nx + 1 + n)
+    plt.xlabel('Firing rate')
 
     
 

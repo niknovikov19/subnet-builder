@@ -7,7 +7,6 @@ from netpyne import specs, sim
 import numpy as np
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
-
 import common as cmn
 
 
