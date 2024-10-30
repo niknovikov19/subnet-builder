@@ -10,24 +10,29 @@ import numpy as np
 import sim_res_parse_utils as srp
 
 
-#dirpath_data_root = Path(r'D:\WORK\Salvador\repo\A1_model_old\data')
-dirpath_data_root = Path(r'D:\WORK\Salvador\repo\subnet_tuner\test\model_PD2_L24_Izh2')
-
 # =============================================================================
+# dirpath_data_root = Path(r'D:\WORK\Salvador\repo\A1_model_old\data')
 # models_info = {
 #     'full': {'path': ('A1_paper', 'v34_batch56_3s')},
 #     'L3_subnet': {'path': ('exp_subnet_L3_3s', 'exp_subnet_L3_3s')}
 #     }
+# pops_vis = ['IT3', 'SOM3', 'PV3', 'VIP3', 'NGF3']
+# t0 = 0.7
 # =============================================================================
+
+dirpath_data_root = Path(r'D:\WORK\Salvador\repo\subnet_tuner\test\model_PD2_L24_Izh2')
 models_info = {
     'full': {'path': 'sim_res'},
     'L2_subnet': {'path': 'sim_res_sub'}
+    #'L2_subnet': {'path': 'sim_res_sub_(inp=replay)'}
     }
+pops_vis = ['L2e', 'L2i', 'L4e', 'L4i']
+t0 = 0
 
 recalc_rates = True
 
-#bins = 10
-bins = np.linspace(0, 50, 15)
+#bins = 15
+bins = np.linspace(0, 20, 10)
 
 
 def _gen_model_path(model_name, postfix):
@@ -38,7 +43,7 @@ def _gen_model_path(model_name, postfix):
         fpath = dirpath_data_root / info['path'][0] / (info['path'][1] + postfix)
     return str(fpath)
 
-def _extract_rate_data(model_name, postfix_sim, postfix_rates):
+def _extract_rate_data(model_name, postfix_sim, postfix_rates, t0=0):
     """Extract firing rates from a sim result and save them. """
     # Load sim result
     fpath_sim = _gen_model_path(model_name, postfix_sim)
@@ -48,7 +53,7 @@ def _extract_rate_data(model_name, postfix_sim, postfix_rates):
     pop_names = srp.get_pop_names(sim_res)
     pop_rate_data = {}
     for pop_name in pop_names:
-        pop_rate_data[pop_name] = srp.get_pop_cell_rates(sim_res, pop_name)
+        pop_rate_data[pop_name] = srp.get_pop_cell_rates(sim_res, pop_name, t0)
     # Save rates
     fpath_out = fpath_sim = _gen_model_path(model_name, postfix_rates)
     with open(fpath_out, 'wb') as fid:
@@ -58,10 +63,11 @@ def _extract_rate_data(model_name, postfix_sim, postfix_rates):
 # Extract firing rate info
 for name, info in models_info.items():
     print(f'Extracting rates for {name} model...')
-    fpath_rates = _gen_model_path(name, '_pop_rates.pkl')
+    postfix_rates = f'_pop_rates_(t0={t0}).pkl'
+    fpath_rates = _gen_model_path(name, postfix_rates)
     if not os.path.exists(fpath_rates) or recalc_rates:
         fpath_sim = _gen_model_path(name, '_data.pkl')
-        _extract_rate_data(name, '_data.pkl', '_pop_rates.pkl')
+        _extract_rate_data(name, '_data.pkl', postfix_rates, t0)
     with open(fpath_rates, 'rb') as fid:
         info['cell_rates'] = pkl.load(fid)
         
@@ -72,8 +78,7 @@ for name, info in models_info.items():
         info['avg_rates'][pop] = np.nanmean(rates)
         info['rate_hist'][pop] = np.histogram(rates, bins=bins, density=True)
         
-pops_vis = ['L2e', 'L2i', 'L4e', 'L4i']
-nx = 2
+nx = 3
 ny = 2
 
 plt.figure()

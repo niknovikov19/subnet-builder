@@ -12,7 +12,8 @@ from subnet_par_builder import SubnetParamBuilder, SubnetDesc
 dirpath_work = Path(r'D:\WORK\Salvador\repo\subnet_tuner\test\model_PD2_L24_Izh2')
 
 #model_desc = ('model.json', 'cfg.json', 'sim_res')
-model_desc = ('model_sub.json', 'cfg_sub.json', 'sim_res_sub')
+#model_desc = ('model_sub.json', 'cfg_sub.json', 'sim_res_sub')
+model_desc = ('model_sub_(inp=replay).json', 'cfg_sub.json', 'sim_res_sub_(inp=replay)')
 
 
 # Load model params
@@ -30,7 +31,7 @@ sim.initialize(simConfig=cfg_, netParams=par_)
 sim.net.createPops()               			# instantiate network populations
 sim.net.createCells()              			# instantiate network cells based on defined populations
 sim.net.connectCells()            			# create connections between cells based on params
-sim.net.addStims() 							# add network stimulation
+sim.net.addStims()  						# add network stimulation
 
 # Run
 sim.setupRecording()              			# setup variables to record for each cell (spikes, V traces, etc)

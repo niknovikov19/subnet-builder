@@ -241,7 +241,7 @@ class SubnetParamBuilder:
     def _create_frozen_pops(self):
         for pop in self.pops_frozen:
             self._create_frozen_pop(pop)
-                
+    
     def _create_frozen_pop(self, pop):
         inp_desc = self.subnet_desc.inp_surrogates[pop]
         # Pop. params common for all type of surrogate input
@@ -249,6 +249,8 @@ class SubnetParamBuilder:
         # Pop. params specific for each surrogate input type
         if inp_desc['type'] == 'irregular':
             par = self._make_inp_params_irregular(pop)
+        elif inp_desc['type'] == 'spike_replay':
+            par = self._make_inp_params_replay(pop)
         else:
             raise ValueError('Invalid type of surrogate input')
         # Add frozen pop to sub-network
@@ -274,7 +276,15 @@ class SubnetParamBuilder:
                if key in keys_tocopy}
         par['cellModel'] = 'NetStim'
         return par
-                
+    
+    def _make_inp_params_replay(self, pop):
+        """Pop. params specific for each surrogate input type. """
+        inp_desc = self.subnet_desc.inp_surrogates[pop]
+        keys_tocopy = ['spkTimes', 'inp_desc', 'number', 'seed']
+        par = {key: deepcopy2(val) for key, val in inp_desc.items()
+               if key in keys_tocopy}
+        par['cellModel'] = 'VecStim'
+        return par
         
         
         

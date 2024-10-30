@@ -16,10 +16,21 @@ fpath_par_orig = dirpath_work / 'model.json'
 with open(fpath_par_orig, 'r') as fid:
     par = json.load(fid)
     
+tlim = (0, None)
+sim_name = 'sim_res'
+postfix = f'(t={tlim[0]}-{tlim[1]})'
+fpath_rates = dirpath_work / f'{sim_name}_pop_rates_{postfix}.pkl'
+fpath_spikes = dirpath_work / f'{sim_name}_spikes_{postfix}.pkl'
+    
 # Load firing rates
-fpath_rates = dirpath_work / 'sim_res_pop_rates.pkl'
 with open(fpath_rates, 'rb') as fid:
     pop_rate_data = pkl.load(fid)
+# Load spikes
+with open(fpath_spikes, 'rb') as fid:
+    spikes = pkl.load(fid)
+    
+#inp_type = 'poiss'
+inp_type = 'replay'
 
 # Subnet description
 desc = SubnetDesc()
@@ -27,15 +38,21 @@ desc.pops_active = ['L2e', 'L2i', 'poissL2e', 'poissL2i']
 desc.conns_frozen = []
 for pop in pop_rate_data:
     if pop not in desc.pops_active:
-        desc.inp_surrogates[pop] = {
-            'type': 'irregular',
-            'rate': np.mean(pop_rate_data[pop]),
-            'noise': 1.0
-            }
+        if inp_type == 'poiss':
+            desc.inp_surrogates[pop] = {
+                'type': 'irregular',
+                'rate': np.mean(pop_rate_data[pop]),
+                'noise': 1.0
+                }
+        elif inp_type == 'replay':
+            desc.inp_surrogates[pop] = {
+                'type': 'spike_replay',
+                'spkTimes': spikes[pop]
+                }
 
 spb = SubnetParamBuilder()
 par_sub = spb.build(par, desc)
 
-fpath_par_sub = dirpath_work / 'model_sub.json'
+fpath_par_sub = dirpath_work / f'model_sub_(inp={inp_type}).json'
 with open(fpath_par_sub, 'w') as fid:
     json.dump(par_sub, fid, cls=cmn.NumpyEncoder, indent=4)
