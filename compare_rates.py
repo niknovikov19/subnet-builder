@@ -10,29 +10,30 @@ import numpy as np
 import sim_res_parse_utils as srp
 
 
-# =============================================================================
-# dirpath_data_root = Path(r'D:\WORK\Salvador\repo\A1_model_old\data')
-# models_info = {
-#     'full': {'path': ('A1_paper', 'v34_batch56_3s')},
-#     'L3_subnet': {'path': ('exp_subnet_L3_3s', 'exp_subnet_L3_3s')}
-#     }
-# pops_vis = ['IT3', 'SOM3', 'PV3', 'VIP3', 'NGF3']
-# t0 = 0.7
-# =============================================================================
-
-dirpath_data_root = Path(r'D:\WORK\Salvador\repo\subnet_tuner\test\model_PD2_L24_Izh2')
+dirpath_data_root = Path(r'D:\WORK\Salvador\repo\A1_model_old\data')
 models_info = {
-    'full': {'path': 'sim_res'},
-    'L2_subnet': {'path': 'sim_res_sub'}
-    #'L2_subnet': {'path': 'sim_res_sub_(inp=replay)'}
+    'full': {'path': ('A1_paper', 'v34_batch56_10s')},
+    'L3_sub_poiss': {'path': ('exp_subnet_L3_3s_poiss', 'exp_subnet_L3_3s_poiss')},
+    'L3_sub_replay': {'path': ('exp_subnet_L3_3s_replay', 'exp_subnet_L3_3s_replay')}
     }
-pops_vis = ['L2e', 'L2i', 'L4e', 'L4i']
-t0 = 0
+pops_vis = ['IT3', 'SOM3', 'PV3', 'VIP3', 'NGF3']
+t0 = 0.7
 
-recalc_rates = True
+# =============================================================================
+# dirpath_data_root = Path(r'D:\WORK\Salvador\repo\subnet_tuner\test\model_PD2_L24_Izh2')
+# models_info = {
+#     'full': {'path': 'sim_res'},
+#     'L2_subnet': {'path': 'sim_res_sub'}
+#     #'L2_subnet': {'path': 'sim_res_sub_(inp=replay)'}
+#     }
+# pops_vis = ['L2e', 'L2i', 'L4e', 'L4i']
+# t0 = 0
+# =============================================================================
 
-#bins = 15
-bins = np.linspace(0, 20, 10)
+recalc_rates = 1
+
+bins = 15
+#bins = np.linspace(0, 20, 10)
 
 
 def _gen_model_path(model_name, postfix):

@@ -10,13 +10,13 @@ from matplotlib import pyplot as plt
 import sim_res_parse_utils as srp
 
 
-#tlim = (1, 4)
-#dirpath_root = Path(r'D:\WORK\Salvador\repo\A1_model_old\data\A1_paper')
-#sim_name = 'v34_batch56_10s'
+tlim = (1, 4)
+dirpath_root = Path(r'D:\WORK\Salvador\repo\A1_model_old\data\A1_paper')
+sim_name = 'v34_batch56_10s'
 
-tlim = (0, None)
-dirpath_root = Path(r'D:\WORK\Salvador\repo\subnet_tuner\test\model_PD2_L24_Izh2')
-sim_name = 'sim_res'
+#tlim = (0, None)
+#dirpath_root = Path(r'D:\WORK\Salvador\repo\subnet_tuner\test\model_PD2_L24_Izh2')
+#sim_name = 'sim_res'
 
 
 fpath_sim_res = dirpath_root / (sim_name + '_data.pkl')
