@@ -31,11 +31,17 @@ with open(fpath_spikes, 'rb') as fid:
     
 #inp_type = 'poiss'
 inp_type = 'replay'
+#inp_type = 'replay_jit'
+
+freeze_conn = 0
 
 # Subnet description
 desc = SubnetDesc()
 desc.pops_active = ['L2e', 'L2i', 'poissL2e', 'poissL2i']
-desc.conns_frozen = []
+if freeze_conn:
+    desc.conns_frozen = ['L2e->L2e', 'L2e->L2i', 'L2i->L2e', 'L2i->L2i']
+else:
+    desc.conns_frozen = []
 for pop in pop_rate_data:
     if pop not in desc.pops_active:
         if inp_type == 'poiss':
@@ -49,10 +55,15 @@ for pop in pop_rate_data:
                 'type': 'spike_replay',
                 'spkTimes': spikes[pop]
                 }
+        elif inp_type == 'replay_jit':
+            desc.inp_surrogates[pop] = {
+                'type': 'spike_replay_jit',
+                'spkTimes': spikes[pop]
+                }
 
 spb = SubnetParamBuilder()
 par_sub = spb.build(par, desc)
 
-fpath_par_sub = dirpath_work / f'model_sub_(inp={inp_type}).json'
+fpath_par_sub = dirpath_work / f'model_sub_(inp={inp_type}_frzconn={freeze_conn}).json'
 with open(fpath_par_sub, 'w') as fid:
     json.dump(par_sub, fid, cls=cmn.NumpyEncoder, indent=4)

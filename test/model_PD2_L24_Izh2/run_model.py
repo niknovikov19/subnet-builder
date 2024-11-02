@@ -13,8 +13,9 @@ dirpath_work = Path(r'D:\WORK\Salvador\repo\subnet_tuner\test\model_PD2_L24_Izh2
 
 #model_desc = ('model.json', 'cfg.json', 'sim_res')
 #model_desc = ('model_sub.json', 'cfg_sub.json', 'sim_res_sub')
-model_desc = ('model_sub_(inp=replay).json', 'cfg_sub.json', 'sim_res_sub_(inp=replay)')
-
+#model_desc = ('model_sub_(inp=replay).json', 'cfg_sub.json', 'sim_res_sub_(inp=replay)')
+model_desc = ('model_sub_(inp=replay_jit_frzconn=0).json', 'cfg_sub.json',
+              'sim_res_sub_(inp=replay_jit_frzconn=0)')
 
 # Load model params
 fpath_par = dirpath_work / model_desc[0]

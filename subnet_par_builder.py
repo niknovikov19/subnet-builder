@@ -249,7 +249,7 @@ class SubnetParamBuilder:
         # Pop. params specific for each surrogate input type
         if inp_desc['type'] == 'irregular':
             par = self._make_inp_params_irregular(pop)
-        elif inp_desc['type'] == 'spike_replay':
+        elif inp_desc['type'] in ('spike_replay', 'spike_replay_jit'):
             par = self._make_inp_params_replay(pop)
         else:
             raise ValueError('Invalid type of surrogate input')
@@ -271,19 +271,34 @@ class SubnetParamBuilder:
     def _make_inp_params_irregular(self, pop):
         """Pop. params specific for each surrogate input type. """
         inp_desc = self.subnet_desc.inp_surrogates[pop]
-        keys_tocopy = ['interval', 'rate', 'noise', 'inp_desc', 'number', 'seed']
+        keys_tocopy = ['interval', 'rate', 'noise', 'number', 'seed']
         par = {key: deepcopy2(val) for key, val in inp_desc.items()
                if key in keys_tocopy}
+        if 'noise' not in par:
+            par['noise'] = 1.0
         par['cellModel'] = 'NetStim'
         return par
+    
+    def _jitter_spiketrains(self, spikes):
+        """Apply a random circular time shift to each spiketrain. """
+        spikes = [np.array(s) for s in spikes]
+        T = np.max(np.concatenate(spikes))
+        d = np.random.uniform(0, T, len(spikes))
+        for n, s in enumerate(spikes):
+            spikes[n] = np.sort((s + d[n]) % T)
+        spikes = [list(s) for s in spikes]
+        return spikes
     
     def _make_inp_params_replay(self, pop):
         """Pop. params specific for each surrogate input type. """
         inp_desc = self.subnet_desc.inp_surrogates[pop]
-        keys_tocopy = ['spkTimes', 'inp_desc', 'number', 'seed']
+        keys_tocopy = ['spkTimes', 'number', 'seed']
         par = {key: deepcopy2(val) for key, val in inp_desc.items()
                if key in keys_tocopy}
         par['cellModel'] = 'VecStim'
+        # Random circular shift of each spike train 
+        if inp_desc['type'] == 'spike_replay_jit':
+            par['spkTimes'] = self._jitter_spiketrains(par['spkTimes'])
         return par
         
         

@@ -1,9 +1,11 @@
 # Compare firing rate distributions between several models
 
+from contextlib import contextmanager
 import os
 from pathlib import Path
 import pickle as pkl
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np 
 
@@ -11,13 +13,6 @@ import sim_res_parse_utils as srp
 
 
 dirpath_data_root = Path(r'D:\WORK\Salvador\repo\A1_model_old\data')
-models_info = {
-    'full': {'path': ('A1_paper', 'v34_batch56_10s')},
-    'L3_sub_poiss': {'path': ('exp_subnet_L3_3s_poiss', 'exp_subnet_L3_3s_poiss')},
-    'L3_sub_replay': {'path': ('exp_subnet_L3_3s_replay', 'exp_subnet_L3_3s_replay')}
-    }
-pops_vis = ['IT3', 'SOM3', 'PV3', 'VIP3', 'NGF3']
-t0 = 0.7
 
 # =============================================================================
 # dirpath_data_root = Path(r'D:\WORK\Salvador\repo\subnet_tuner\test\model_PD2_L24_Izh2')
@@ -30,11 +25,42 @@ t0 = 0.7
 # t0 = 0
 # =============================================================================
 
+# =============================================================================
+# models_info = {
+#     #'full_3s': {'path': ('A1_paper', 'v34_batch56_3s')},
+#     'full_10s': {'path': ('A1_paper', 'v34_batch56_10s')},
+#     #'L3_sub_poiss': {'path': ('exp_subnet_L3_3s_poiss_t=1-4', 'exp_subnet_L3_3s_poiss')},
+#     #'L3_sub_poiss_old': {'path': ('exp_subnet_L3_3s_poiss_old', 'exp_subnet_L3_3s_poiss')},
+#     #'L3_sub_rep_3s_1-4': {'path': ('exp_subnet_L3_3s_replay_t=1-4', 'exp_subnet_L3_3s_replay')},
+#     #'L3_sub_rep_3s_0-3': {'path': ('exp_subnet_L3_3s_replay_t=0-3', 'exp_subnet_L3_3s_replay_t=0-3')},
+#     'L3_sub_rep_8s_1-10': {'path': ('exp_subnet_L3_8s_replay_t=1-10', 'exp_subnet_L3_8s_replay_t=1-10')}
+#     }
+# pops_vis = ['IT3', 'SOM3', 'PV3', 'VIP3', 'NGF3']
+# =============================================================================
+models_info = {
+    'full_10s': {'path': ('A1_paper', 'v34_batch56_10s')},
+    'L2_sub_rep_8s_1-10': {'path': ('exp_subnet_L2_8s_replay_t=1-10', 'exp_subnet_L2_8s_replay_t=1-10')}
+    }
+pops_vis = ['IT2', 'SOM2', 'PV2', 'VIP2', 'NGF2']
+
+t0 = 1
+
 recalc_rates = 1
 
 bins = 15
 #bins = np.linspace(0, 20, 10)
 
+
+@contextmanager
+def no_plt_close():
+    backend = matplotlib.get_backend()
+    #original_close = plt.close
+    #plt.close = lambda *args, **kwargs: None
+    plt.ioff()
+    yield
+    plt.ion()
+    #plt.close = original_close
+    matplotlib.use(backend)
 
 def _gen_model_path(model_name, postfix):
     info = models_info[model_name]
@@ -48,6 +74,7 @@ def _extract_rate_data(model_name, postfix_sim, postfix_rates, t0=0):
     """Extract firing rates from a sim result and save them. """
     # Load sim result
     fpath_sim = _gen_model_path(model_name, postfix_sim)
+    #with no_plt_close(), open(fpath_sim, 'rb') as fid:
     with open(fpath_sim, 'rb') as fid:
         sim_res = pkl.load(fid)
     # Extract rates
