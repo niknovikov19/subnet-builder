@@ -1,0 +1,113 @@
+{
+    "popParams": {
+        "P0": {
+            "cellModel": "HH",
+            "ynormRange": [
+                0,
+                0
+            ],
+            "density": 0,
+            "cellType": "C0"
+        },
+        "P1": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -1,
+                1
+            ],
+            "density": 10,
+            "cellType": "C0"
+        },
+        "P3": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -3,
+                3
+            ],
+            "density": 30,
+            "cellType": "C0"
+        },
+        "P5": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -5,
+                5
+            ],
+            "density": 50,
+            "cellType": "C1"
+        },
+        "P6frz": {
+            "ynormRange": [
+                -6,
+                6
+            ],
+            "density": 60,
+            "cellType": "C1",
+            "rate": 600,
+            "noise": 1.0,
+            "cellModel": "NetStim"
+        },
+        "P7frz": {
+            "ynormRange": [
+                -7,
+                7
+            ],
+            "density": 70,
+            "cellType": "C1",
+            "rate": 700,
+            "noise": 1.0,
+            "cellModel": "NetStim"
+        }
+    },
+    "connParams": {
+        "P0->C1": {
+            "preConds": {
+                "pop": "P0"
+            },
+            "postConds": {
+                "cellType": "C1"
+            },
+            "weight": -0.1
+        },
+        "P1->P5": {
+            "preConds": {
+                "pop": "P1"
+            },
+            "postConds": {
+                "pop": "P5"
+            },
+            "weight": 1.5
+        },
+        "P5->P1": {
+            "preConds": {
+                "pop": "P5"
+            },
+            "postConds": {
+                "pop": "P1"
+            },
+            "weight": 5.1
+        },
+        "P6->P23": {
+            "preConds": {
+                "pop": "P6frz"
+            },
+            "postConds": {
+                "pop": "P3"
+            },
+            "weight": 6.23
+        },
+        "P67->P3": {
+            "preConds": {
+                "pop": [
+                    "P6frz",
+                    "P7frz"
+                ]
+            },
+            "postConds": {
+                "pop": "P3"
+            },
+            "weight": 67.3
+        }
+    },
+    "meta": "META"
+}

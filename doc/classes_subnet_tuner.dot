@@ -1,0 +1,6 @@
+digraph "classes_subnet_tuner" {
+rankdir=BT
+charset="utf-8"
+"subnet_tuner.subnet_par_builder.SubnetDesc" [color="black", fontcolor="black", label=<{SubnetDesc|conns_frozen : list<br ALIGN="LEFT"/>inp_surrogates : dict<br ALIGN="LEFT"/>pops_active : list<br ALIGN="LEFT"/>|<I>load</I>(fpath)<br ALIGN="LEFT"/><I>save</I>(fpath)<br ALIGN="LEFT"/>}>, shape="record", style="solid"];
+"subnet_tuner.subnet_par_builder.SubnetParamBuilder" [color="black", fontcolor="black", label=<{SubnetParamBuilder|netpar_full : Dict<br ALIGN="LEFT"/>netpar_sub : Dict, dict<br ALIGN="LEFT"/>pops_active : List<br ALIGN="LEFT"/>pops_frozen : list, List<br ALIGN="LEFT"/>subnet_desc : Optional[SubnetDesc]<br ALIGN="LEFT"/>|build(netpar_full, subnet_desc)<br ALIGN="LEFT"/>}>, shape="record", style="solid"];
+}

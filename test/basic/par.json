@@ -1,0 +1,154 @@
+{
+    "popParams": {
+        "P0": {
+            "cellModel": "HH",
+            "ynormRange": [
+                0,
+                0
+            ],
+            "density": 0,
+            "cellType": "C0"
+        },
+        "P1": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -1,
+                1
+            ],
+            "density": 10,
+            "cellType": "C0"
+        },
+        "P2": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -2,
+                2
+            ],
+            "density": 20,
+            "cellType": "C0"
+        },
+        "P3": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -3,
+                3
+            ],
+            "density": 30,
+            "cellType": "C0"
+        },
+        "P4": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -4,
+                4
+            ],
+            "density": 40,
+            "cellType": "C1"
+        },
+        "P5": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -5,
+                5
+            ],
+            "density": 50,
+            "cellType": "C1"
+        },
+        "P6": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -6,
+                6
+            ],
+            "density": 60,
+            "cellType": "C1"
+        },
+        "P7": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -7,
+                7
+            ],
+            "density": 70,
+            "cellType": "C1"
+        }
+    },
+    "connParams": {
+        "C0->P4": {
+            "preConds": {
+                "cellType": "C0"
+            },
+            "postConds": {
+                "pop": "P4"
+            },
+            "weight": -0.4
+        },
+        "P0->C1": {
+            "preConds": {
+                "pop": "P0"
+            },
+            "postConds": {
+                "cellType": "C1"
+            },
+            "weight": -0.1
+        },
+        "P1->P5": {
+            "preConds": {
+                "pop": "P1"
+            },
+            "postConds": {
+                "pop": "P5"
+            },
+            "weight": 1.5
+        },
+        "P5->P1": {
+            "preConds": {
+                "pop": "P5"
+            },
+            "postConds": {
+                "pop": "P1"
+            },
+            "weight": 5.1
+        },
+        "P23->P67": {
+            "preConds": {
+                "pop": [
+                    "P2",
+                    "P3"
+                ]
+            },
+            "postConds": {
+                "pop": [
+                    "P6",
+                    "P7"
+                ]
+            },
+            "weight": 23.67
+        },
+        "P6->P23": {
+            "preConds": {
+                "pop": "P6"
+            },
+            "postConds": {
+                "pop": [
+                    "P2",
+                    "P3"
+                ]
+            },
+            "weight": 6.23
+        },
+        "P67->P3": {
+            "preConds": {
+                "pop": [
+                    "P6",
+                    "P7"
+                ]
+            },
+            "postConds": {
+                "pop": "P3"
+            },
+            "weight": 67.3
+        }
+    },
+    "meta": "META"
+}

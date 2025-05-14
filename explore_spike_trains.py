@@ -9,7 +9,7 @@ import numpy as np
 import sim_res_parse_utils as srp
 
 
-def gen_spikes(r, CV, T=3):
+def gen_spikes(r: float, CV: float, T: float) -> np.ndarray:
     mean_ISI = 1 / r
     spike_times = []
     current_time = 0.0
@@ -29,7 +29,7 @@ def gen_spikes(r, CV, T=3):
 #fpath_sim = r"D:\WORK\Salvador\repo\A1_model_old\data\exp_subnet_L3_3s\exp_subnet_L3_3s_data.pkl"
 fpath_sim = r"D:\WORK\Salvador\repo\A1_model_old\data\A1_paper\v34_batch56_10s_data.pkl"
 
-pop_name = 'VIP3'
+pop_name = 'PV3'
 
 #tlim = (1, 4)
 tlim = (1, 10)

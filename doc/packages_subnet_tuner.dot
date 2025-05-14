@@ -1,0 +1,7 @@
+digraph "packages_subnet_tuner" {
+rankdir=BT
+charset="utf-8"
+"subnet_tuner" [color="black", label=<subnet_tuner>, shape="box", style="solid"];
+"subnet_tuner.subnet_par_builder" [color="black", label=<subnet_tuner.subnet_par_builder>, shape="box", style="solid"];
+"subnet_tuner" -> "subnet_tuner.subnet_par_builder" [arrowhead="open", arrowtail="none"];
+}
