@@ -43,7 +43,8 @@ class SubnetParamBuilder2:
     def _init_netpar_sub(self):
         """Init to-be-modified params with {}, copy others from the full model. """
         self.netpar_sub = {}
-        keys_upd = ['popParams', 'connParams', 'subConnParams', 'stimTargetParams']
+        keys_upd = ['popParams', 'connParams', 'subConnParams', 
+                    'stimSourceParams', 'stimTargetParams']
         for key, val in self.netpar_full.items():
             if key in keys_upd:
                 self.netpar_sub[key] = {}
@@ -61,12 +62,21 @@ class SubnetParamBuilder2:
         else:
             return []
     
-    def _get_all_stims(self):
+    '''
+    def _get_all_stim_sourcces(self):
+        """Get all stim. sources of the full model. """
+        if 'stimSourceParams' in self.netpar_full:
+            return list(self.netpar_full['stimSourceParams'].keys())
+        else:
+            return []
+    
+    def _get_all_stim_targets(self):
         """Get all stim. targets of the full model. """
         if 'stimTargetParams' in self.netpar_full:
             return list(self.netpar_full['stimTargetParams'].keys())
         else:
             return []
+    '''
     
     def _get_conn_par(self, conn, par_group='connParams'):
         return self.netpar_full[par_group][conn]
@@ -139,14 +149,28 @@ class SubnetParamBuilder2:
         return pop + 'frz'
                     
     def _copy_stim_params(self):
-        """Copy relevant entries of stimTargetParams. """
-        print('Copy stim. targets...')
-        for stim in self._get_all_stims():
-            pops_post = self._get_stim_pops_postsyn(stim)
+        """Copy relevant entries of stimSourceParams and stimTargetParams. """
+        print('Copy stim. sources and targets...')
+
+        # Copy stim. targets
+        stim_sources = []   # accumulate to-be-copied sources here
+        for targ_name, targ_par in self.netpar_full.get('stimTargetParams', {}).items():
+            pops_post = self._get_stim_pops_postsyn(targ_name)
             # At least one of the stim. targets is active - copy the stim.
             if lists_intersect(pops_post, self.pops_active):
-                self.netpar_sub['stimTargetParams'][stim] = (
-                    deepcopy2(self.netpar_full['stimTargetParams'][stim]))
+                src_name = targ_par['source']
+                stim_sources.append(src_name)   # the source should be copied
+                targ_name_new = targ_name.replace('NoiseSEClamp', 'NoiseOU')
+                targ_par_new = deepcopy2(targ_par)
+                targ_par_new['source'] = src_name.replace('NoiseSEClamp', 'NoiseOU')
+                self.netpar_sub['stimTargetParams'][targ_name_new] = targ_par_new                
+        
+        # Copy stim. sources
+        stim_sources = list(set(stim_sources))
+        for src_name in stim_sources:
+            src_name_new = src_name.replace('NoiseSEClamp', 'NoiseOU')
+            src_par = self.netpar_full['stimSourceParams'][src_name]
+            self.netpar_sub['stimSourceParams'][src_name_new] = deepcopy2(src_par)
     
     def _create_frozen_pops(self):
         for pop in self.pops_frozen:
