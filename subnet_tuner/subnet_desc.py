@@ -16,6 +16,8 @@ class SubnetDesc:
     pops_active: list | Literal['all'] = field(default_factory=list)
     conns_frozen: list | Literal['all'] = field(default_factory=list)
     inp_surrogates: dict = field(default_factory=dict)
+
+    duplicate_active_pops: bool = False
     
     def save(self, fpath): pass
     def load(self, fpath): pass

@@ -1,8 +1,9 @@
 import copy
 from dataclasses import dataclass, field
-from typing import Dict, List, Literal
 
 import numpy as np
+
+from netpyne.network import Network
 
 from .netpar_utils import get_cond_pops, get_conn_pops_presyn, get_conn_pops_postsyn
 from .subnet_desc import SubnetDesc
@@ -19,11 +20,12 @@ class SubnetParamBuilder2:
         
     """
     def __init__(self):
-        self.pops_active: List = []
-        self.pops_frozen: List = []
+        self.pops_active: list = []
+        self.pops_frozen: list = []
+        self.conns_info: dict = {}
         self.subnet_desc: SubnetDesc = None
-        self.netpar_full: Dict = {}
-        self.netpar_sub: Dict = {}
+        self.netpar_full: dict = {}
+        self.netpar_sub: dict = {}
         
     def build(self, netpar_full, subnet_desc):
         self.netpar_full = netpar_full
@@ -39,6 +41,29 @@ class SubnetParamBuilder2:
         self._copy_stim_params()
         # TODO: subconn
         return self.netpar_sub
+    
+    def switch_active_conns(
+            self,
+            turn_on: bool = True,
+            net: Network | None = None
+            ) -> None:
+        for conn_name, conn in self.conns_info.items():
+            for pop_name, pop_info in conn['presyn'].items():
+                pop_orig, pop_frozen = pop_info['orig'], pop_info['frozen']
+                if pop_orig and pop_frozen:
+                    print(f'{conn_name} [pre: {pop_orig}] -> {int(turn_on)}')
+                    print(f'{conn_name} [pre: {pop_frozen}] -> {int(not turn_on)}')
+                    if net:
+                        net.modifyConns({
+                            'conds': {'label': conn_name},
+                            'preConds': {'pop': pop_orig},
+                            'active': int(turn_on)
+                        })
+                        net.modifyConns({
+                            'conds': {'label': conn_name},
+                            'preConds': {'pop': pop_frozen},
+                            'active': int(not turn_on)
+                        })
         
     def _init_netpar_sub(self):
         """Init to-be-modified params with {}, copy others from the full model. """
@@ -61,23 +86,7 @@ class SubnetParamBuilder2:
             return list(self.netpar_full[par_group].keys())
         else:
             return []
-    
-    '''
-    def _get_all_stim_sourcces(self):
-        """Get all stim. sources of the full model. """
-        if 'stimSourceParams' in self.netpar_full:
-            return list(self.netpar_full['stimSourceParams'].keys())
-        else:
-            return []
-    
-    def _get_all_stim_targets(self):
-        """Get all stim. targets of the full model. """
-        if 'stimTargetParams' in self.netpar_full:
-            return list(self.netpar_full['stimTargetParams'].keys())
-        else:
-            return []
-    '''
-    
+
     def _get_conn_par(self, conn, par_group='connParams'):
         return self.netpar_full[par_group][conn]
     
@@ -91,6 +100,7 @@ class SubnetParamBuilder2:
 
     def _copy_conns(self):
         self.pops_frozen = []
+        self.conns_info = {}
 
         for conn in self._get_all_conns():
             pops_pre = self._get_conn_pops_presyn(conn)
@@ -105,15 +115,28 @@ class SubnetParamBuilder2:
             conn_par_new['postConds']['pop'] = pops_post_new   # explicitly define postConds by pop list
             conn_par_new['postConds'].pop('cellType', None)   # if postConds were defined by cellType - clean it
 
-            # Pre-synaptic pops. - original or frozen
+            # Pre-synaptic pops. - original and/or frozen
+            self.conns_info[conn] = {'presyn': {}}
             pops_pre_new = []
             for pop in pops_pre:
+                add_orig, add_frozen = False, False
                 if self._is_conn_active(conn) and self._is_pop_active(pop):
-                    pops_pre_new.append(pop)   # active presynaptic pop.
+                    add_orig = True
+                    if self.subnet_desc.duplicate_active_pops:
+                        add_frozen = True
                 else:
+                    add_frozen = True
+
+                self.conns_info[conn]['presyn'][pop] = {'orig': None, 'frozen': None}
+                if add_orig:
+                    pops_pre_new.append(pop)   # original pop.
+                    self.conns_info[conn]['presyn'][pop]['orig'] = pop
+                if add_frozen:
                     pop_frz = self._gen_frozen_pop_name(pop)
                     pops_pre_new.append(pop_frz)
                     self.pops_frozen.append(pop)
+                    self.conns_info[conn]['presyn'][pop]['frozen'] = pop_frz
+            
             conn_par_new['preConds']['pop'] = pops_pre_new
             conn_par_new['preConds'].pop('cellType', None)   # if preConds were defined by cellType - clean it
 
