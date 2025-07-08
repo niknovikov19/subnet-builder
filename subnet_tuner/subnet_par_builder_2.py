@@ -51,18 +51,18 @@ class SubnetParamBuilder2:
             for pop_name, pop_info in conn['presyn'].items():
                 pop_orig, pop_frozen = pop_info['orig'], pop_info['frozen']
                 if pop_orig and pop_frozen:
-                    print(f'{conn_name} [pre: {pop_orig}] -> {int(turn_on)}')
-                    print(f'{conn_name} [pre: {pop_frozen}] -> {int(not turn_on)}')
                     if net:
+                        print(f'>>>> {conn_name} [pre: {pop_orig}] -> {int(turn_on)}')
                         net.modifyConns({
                             'conds': {'label': conn_name},
                             'preConds': {'pop': pop_orig},
-                            'active': int(turn_on)
+                            'active_flag': turn_on
                         })
+                        print(f'>>>> {conn_name} [pre: {pop_frozen}] -> {int(not turn_on)}')
                         net.modifyConns({
                             'conds': {'label': conn_name},
                             'preConds': {'pop': pop_frozen},
-                            'active': int(not turn_on)
+                            'active_flag': (not turn_on)
                         })
         
     def _init_netpar_sub(self):

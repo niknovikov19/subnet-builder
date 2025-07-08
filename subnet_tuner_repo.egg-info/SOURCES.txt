@@ -1,6 +1,11 @@
 setup.py
 subnet_tuner/__init__.py
+subnet_tuner/netpar_to_mermaid_.py
+subnet_tuner/netpar_utils.py
+subnet_tuner/subnet_desc.py
 subnet_tuner/subnet_par_builder.py
+subnet_tuner/subnet_par_builder_2.py
+subnet_tuner/utils.py
 subnet_tuner_repo.egg-info/PKG-INFO
 subnet_tuner_repo.egg-info/SOURCES.txt
 subnet_tuner_repo.egg-info/dependency_links.txt
