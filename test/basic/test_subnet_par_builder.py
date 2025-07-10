@@ -41,27 +41,27 @@ par['connParams']['P67->P3'] = {
 
 # Subnet description
 desc = SubnetDesc()
-#desc.pops_active = ['P1', 'P3', 'P4', 'P5']
-desc.pops_active = ['P0', 'P7', 'P3']
+desc.pops_active = ['P1', 'P3', 'P4', 'P5']
+#desc.pops_active = ['P0', 'P7', 'P3']
 #desc.pops_active = 'all'
 #desc.conns_frozen = ['C0->P4', 'P1->P5']
 #desc.conns_frozen = 'all'
-desc.conns_frozen = []
+desc.conns_frozen = [('P3', 'P4')]
 for n in range(8):
     desc.inp_surrogates[f'P{n}'] = {'type': 'irregular', 'rate': n * 100}
-desc.duplicate_active_pops = True
-subnet_name = 'par_sub_all'
+desc.duplicate_active_pops = False
+subnet_name = 'par_sub_6'
 
 # Build subnet
 spb = SubnetParamBuilder2()
 par_sub = spb.build(par, desc)
 
-print('--------')
+""" print('--------')
 spb.switch_active_conns(True)
 print('--------')
-spb.switch_active_conns(False)
+spb.switch_active_conns(False) """
 
-""" dirpath_base = Path(__file__).resolve().parent
+dirpath_base = Path(__file__).resolve().parent
 
 # Save to json
 with open(dirpath_base / 'par.json', 'w') as f:
@@ -74,5 +74,5 @@ netpar_to_mermaid(par, dirpath_base / 'par.md')
 
 # Save subnet to mermaid
 info = 'Active: ' + ', '.join(desc.pops_active)
-info += '\nFrozen: ' + ', '.join(desc.conns_frozen)
-netpar_to_mermaid(par_sub, dirpath_base / f'{subnet_name}.md', info) """
+#info += '\nFrozen: ' + ', '.join(desc.conns_frozen)
+netpar_to_mermaid(par_sub, dirpath_base / f'{subnet_name}.md', info)

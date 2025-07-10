@@ -96,7 +96,17 @@ class SubnetParamBuilder2:
     def _is_conn_active(self, conn):
         if self.subnet_desc.conns_frozen == 'all':
             return False
-        return not conn in self.subnet_desc.conns_frozen
+        pops_pre = self._get_conn_pops_presyn(conn)
+        pops_post = self._get_conn_pops_postsyn(conn)
+        for conn_frz in self.subnet_desc.conns_frozen:
+            if isinstance(conn_frz, str):   # frozen conn. given by its name
+                if conn == conn_frz:
+                    return False
+            else:   # frozen conn. given py its pre/post pop. pair
+                if (conn_frz[0] in pops_pre) and (conn_frz[1] in pops_post):
+                    return False
+        return True
+        #return not conn in self.subnet_desc.conns_frozen
 
     def _copy_conns(self):
         self.pops_frozen = []
@@ -155,11 +165,11 @@ class SubnetParamBuilder2:
         """Return a list of populations that meet the conditions conds. """
         return get_cond_pops(self.netpar_full, conds)
     
-    def _get_conn_pops_presyn(self, conn, par_group='connParams'):
+    def _get_conn_pops_presyn(self, conn, par_group='connParams') -> list[str]:
         """Get pre-synaptic populations of a (sub-)connection (from full model). """
         return get_conn_pops_presyn(self.netpar_full, conn, par_group)
             
-    def _get_conn_pops_postsyn(self, conn, par_group='connParams'):
+    def _get_conn_pops_postsyn(self, conn, par_group='connParams') -> list[str]:
         """Get post-synaptic populations of a (sub-)connection (from full model). """
         return get_conn_pops_postsyn(self.netpar_full, conn, par_group)
     
