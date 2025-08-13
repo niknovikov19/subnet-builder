@@ -87,9 +87,19 @@ class SubnetParamBuilder2:
         else:
             return []
 
+    def _get_pop_par(self, pop):
+        return self.netpar_full['popParams'][pop]
+    
     def _get_conn_par(self, conn, par_group='connParams'):
         return self.netpar_full[par_group][conn]
     
+    def _is_pop_static(self, pop):
+        par = self._get_pop_par(pop)
+        if 'cellModel' in par:
+            if par['cellModel'] in ['NetStim', 'VecStim']:
+                return True
+        return False
+
     def _is_pop_active(self, pop):
         return pop in self.pops_active
 
@@ -129,14 +139,20 @@ class SubnetParamBuilder2:
             self.conns_info[conn] = {'presyn': {}}
             pops_pre_new = []
             for pop in pops_pre:
+                # Check whether original/frozen pop. should be added
                 add_orig, add_frozen = False, False
-                if self._is_conn_active(conn) and self._is_pop_active(pop):
+                if self._is_pop_static(pop):
+                    add_orig = True   # NetStim's and VecStims are just copied
+                    if pop not in self.pops_active:
+                        self.pops_active.append(pop)
+                elif self._is_conn_active(conn) and self._is_pop_active(pop):
                     add_orig = True
                     if self.subnet_desc.duplicate_active_pops:
                         add_frozen = True
                 else:
                     add_frozen = True
 
+                # Add original/frozen pop.
                 self.conns_info[conn]['presyn'][pop] = {'orig': None, 'frozen': None}
                 if add_orig:
                     pops_pre_new.append(pop)   # original pop.
@@ -226,7 +242,7 @@ class SubnetParamBuilder2:
     
     def _make_inp_params_common(self, pop):
         """Pop. params common for all type of surrogate input. """
-        par_orig = self.netpar_full['popParams'][pop]
+        par_orig = self._get_pop_par(pop)
         keys_tocopy = [
             'numCells', 'density', 'gridSpacing', 'xRange', 'xnormRange',
             'yRange', 'ynormRange', 'zRange', 'znormRange',
