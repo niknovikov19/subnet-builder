@@ -29,7 +29,8 @@ class SubnetParamBuilder2:
         
     def build(self, netpar_full, subnet_desc):
         self.netpar_full = netpar_full
-        self.subnet_desc = subnet_desc
+        self.subnet_desc = deepcopy2(subnet_desc)
+        self.subnet_desc.prepare()
         self._init_netpar_sub()   # copy to subnet the params that won't be changed
         if self.subnet_desc.pops_active == 'all':
             self.pops_active = self._get_all_pops()

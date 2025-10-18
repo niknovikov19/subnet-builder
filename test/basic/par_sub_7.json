@@ -36,23 +36,13 @@
             "density": 50,
             "cellType": "C1"
         },
-        "P5frz": {
+        "P1frz": {
             "ynormRange": [
-                -5,
-                5
+                -1,
+                1
             ],
-            "density": 50,
-            "rate": 500,
-            "noise": 1.0,
-            "cellModel": "NetStim"
-        },
-        "P6frz": {
-            "ynormRange": [
-                -6,
-                6
-            ],
-            "density": 60,
-            "rate": 600,
+            "density": 10,
+            "rate": 100,
             "noise": 1.0,
             "cellModel": "NetStim"
         },
@@ -86,13 +76,23 @@
             "noise": 1.0,
             "cellModel": "NetStim"
         },
-        "P1frz": {
+        "P5frz": {
             "ynormRange": [
-                -1,
-                1
+                -5,
+                5
             ],
-            "density": 10,
-            "rate": 100,
+            "density": 50,
+            "rate": 500,
+            "noise": 1.0,
+            "cellModel": "NetStim"
+        },
+        "P6frz": {
+            "ynormRange": [
+                -6,
+                6
+            ],
+            "density": 60,
+            "rate": 600,
             "noise": 1.0,
             "cellModel": "NetStim"
         }

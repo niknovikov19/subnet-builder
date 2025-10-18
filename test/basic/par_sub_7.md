@@ -18,12 +18,12 @@ graph LR
     P3["P3<br/>C0<br/>HH"]
     P4["P4<br/>C1<br/>HH"]
     P5["P5<br/>C1<br/>HH"]
-    P5frz["P5frz<br/>NetStim"]
-    P6frz["P6frz<br/>NetStim"]
+    P1frz["P1frz<br/>NetStim"]
     P2frz["P2frz<br/>NetStim"]
     P0frz["P0frz<br/>NetStim"]
     P7frz["P7frz<br/>NetStim"]
-    P1frz["P1frz<br/>NetStim"]
+    P5frz["P5frz<br/>NetStim"]
+    P6frz["P6frz<br/>NetStim"]
     P1 -->|C0->P4 -0.4| P4
     P3 -->|C0->P4 -0.4| P4
     P0frz -->|frz_C0->P4 -0.4| P4
