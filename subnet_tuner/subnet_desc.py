@@ -20,7 +20,10 @@ class SubnetDesc:
         field(default_factory=list)
     inp_surrogates: dict = field(default_factory=dict)
 
-    duplicate_active_pops: bool = False
+    conns_split: dict[str | tuple[str, str], float] = \
+        field(default_factory=dict)
+
+    #duplicate_active_pops: bool = False
 
     # conn. names or pre/post pop pairs
     #pops_inactive: list[str | tuple[str, str]]   

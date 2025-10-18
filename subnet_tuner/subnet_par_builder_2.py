@@ -42,7 +42,7 @@ class SubnetParamBuilder2:
         # TODO: subconn
         return self.netpar_sub
     
-    def switch_active_conns(
+    """ def switch_active_conns(
             self,
             turn_on: bool = True,
             net: Network | None = None
@@ -63,7 +63,7 @@ class SubnetParamBuilder2:
                             'conds': {'label': conn_name},
                             'preConds': {'pop': pop_frozen},
                             'active_flag': (not turn_on)
-                        })
+                        }) """
         
     def _init_netpar_sub(self):
         """Init to-be-modified params with {}, copy others from the full model. """
@@ -113,14 +113,32 @@ class SubnetParamBuilder2:
                 if conn == conn_frz:
                     return False
             else:   # frozen conn. given py its pre/post pop. pair
+                if (len(pops_pre) > 1) or (len(pops_post) > 1):
+                    raise ValueError('Cannot specify frozen connections by pre/post pop. pairs '
+                                     'when pre/post pop. lists contain more than one pop.')
                 if (conn_frz[0] in pops_pre) and (conn_frz[1] in pops_post):
                     return False
         return True
         #return not conn in self.subnet_desc.conns_frozen
+    
+    def _get_conn_split_k(self, conn: str) -> float | None:
+        pops_pre = self._get_conn_pops_presyn(conn)
+        pops_post = self._get_conn_pops_postsyn(conn)
+        for conn_split, k in self.subnet_desc.conns_split.items():
+            if isinstance(conn_split, str):   # split conn. given by its name
+                if conn == conn_split:
+                    return k
+            else:   # split conn. given py its pre/post pop. pair
+                if (conn_split[0] in pops_pre) and (conn_split[1] in pops_post):
+                    if (len(pops_pre) > 1) or (len(pops_post) > 1):
+                        raise ValueError('Cannot specify split connections by pre/post pop. pairs '
+                                        'when pre/post pop. lists contain more than one pop.')
+                    return k
+        return None
 
     def _copy_conns(self):
         self.pops_frozen = []
-        self.conns_info = {}
+        #self.conns_info = {}
 
         for conn in self._get_all_conns():
             pops_pre = self._get_conn_pops_presyn(conn)
@@ -136,38 +154,59 @@ class SubnetParamBuilder2:
             conn_par_new['postConds'].pop('cellType', None)   # if postConds were defined by cellType - clean it
 
             # Pre-synaptic pops. - original and/or frozen
-            self.conns_info[conn] = {'presyn': {}}
-            pops_pre_new = []
+            #self.conns_info[conn] = {'presyn': {}}
+            pops_pre_new = {'orig': [], 'frozen': []}
+
+            is_conn_active = self._is_conn_active(conn)   # active or surrogate
+            conn_split_k = self._get_conn_split_k(conn)   # partially active
+            is_conn_split = conn_split_k is not None
+            if is_conn_split and not is_conn_active:
+                raise ValueError('Connection splitting is only supported for active connections.')
+
             for pop in pops_pre:
                 # Check whether original/frozen pop. should be added
                 add_orig, add_frozen = False, False
                 if self._is_pop_static(pop):
                     add_orig = True   # NetStim's and VecStims are just copied
                     if pop not in self.pops_active:
-                        self.pops_active.append(pop)
-                elif self._is_conn_active(conn) and self._is_pop_active(pop):
+                        self.pops_active.append(pop) # add Net/VecStims not explicitly mentioned in pops_active
+                elif is_conn_active and self._is_pop_active(pop):
                     add_orig = True
-                    if self.subnet_desc.duplicate_active_pops:
+                    #if self.subnet_desc.duplicate_active_pops:
+                    #    add_frozen = True
+                    if conn_split_k is not None:
                         add_frozen = True
                 else:
                     add_frozen = True
 
                 # Add original/frozen pop.
-                self.conns_info[conn]['presyn'][pop] = {'orig': None, 'frozen': None}
+                #self.conns_info[conn]['presyn'][pop] = {'orig': None, 'frozen': None}
                 if add_orig:
-                    pops_pre_new.append(pop)   # original pop.
-                    self.conns_info[conn]['presyn'][pop]['orig'] = pop
+                    pops_pre_new['orig'].append(pop)   # original pop.
+                    #self.conns_info[conn]['presyn'][pop]['orig'] = pop
                 if add_frozen:
                     pop_frz = self._gen_frozen_pop_name(pop)
-                    pops_pre_new.append(pop_frz)
+                    pops_pre_new['frozen'].append(pop_frz)
                     self.pops_frozen.append(pop)
-                    self.conns_info[conn]['presyn'][pop]['frozen'] = pop_frz
+                    #self.conns_info[conn]['presyn'][pop]['frozen'] = pop_frz
             
-            conn_par_new['preConds']['pop'] = pops_pre_new
-            conn_par_new['preConds'].pop('cellType', None)   # if preConds were defined by cellType - clean it
+            #conn_par_new['preConds'].pop('cellType', None)   # if preConds were defined by cellType - clean it
 
             # Add the connection to the subnet
-            self.netpar_sub['connParams'][conn] = conn_par_new
+            conn_frz = self._gen_frozen_conn_name(conn)
+            conn_name_new = {'orig': conn, 'frozen': conn_frz}
+            for t in ['orig', 'frozen']:
+                if len(pops_pre_new[t]) == 0:
+                    continue
+                conn_par_new_ = deepcopy2(conn_par_new)
+                conn_par_new_['preConds']['pop'] = pops_pre_new[t]
+                self.netpar_sub['connParams'][conn_name_new[t]] = conn_par_new_
+            
+            # Split the connection
+            if is_conn_split:
+                # TODO: check that the weight is numerical
+                self.netpar_sub['connParams'][conn]['weight'] *= conn_split_k
+                self.netpar_sub['connParams'][conn_frz]['weight'] *= (1 - conn_split_k)
         
         self.pops_frozen = list(set(self.pops_frozen))   # remove duplicates
     
@@ -194,8 +233,11 @@ class SubnetParamBuilder2:
         conds = self.netpar_full['stimTargetParams'][stim]['conds']
         return self._get_cond_pops(conds)
 
-    def _gen_frozen_pop_name(self, pop):
+    def _gen_frozen_pop_name(self, pop: str) -> str:
         return pop + 'frz'
+    
+    def _gen_frozen_conn_name(self, conn: str) -> str:
+        return 'frz_' + conn
                     
     def _copy_stim_params(self):
         """Copy relevant entries of stimSourceParams and stimTargetParams. """

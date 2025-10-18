@@ -1,0 +1,187 @@
+{
+    "popParams": {
+        "P1": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -1,
+                1
+            ],
+            "density": 10,
+            "cellType": "C0"
+        },
+        "P3": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -3,
+                3
+            ],
+            "density": 30,
+            "cellType": "C0"
+        },
+        "P4": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -4,
+                4
+            ],
+            "density": 40,
+            "cellType": "C1"
+        },
+        "P5": {
+            "cellModel": "HH",
+            "ynormRange": [
+                -5,
+                5
+            ],
+            "density": 50,
+            "cellType": "C1"
+        },
+        "P2frz": {
+            "ynormRange": [
+                -2,
+                2
+            ],
+            "density": 20,
+            "rate": 200,
+            "noise": 1.0,
+            "cellModel": "NetStim"
+        },
+        "P0frz": {
+            "ynormRange": [
+                0,
+                0
+            ],
+            "density": 0,
+            "rate": 0,
+            "noise": 1.0,
+            "cellModel": "NetStim"
+        },
+        "P3frz": {
+            "ynormRange": [
+                -3,
+                3
+            ],
+            "density": 30,
+            "rate": 300,
+            "noise": 1.0,
+            "cellModel": "NetStim"
+        },
+        "P1frz": {
+            "ynormRange": [
+                -1,
+                1
+            ],
+            "density": 10,
+            "rate": 100,
+            "noise": 1.0,
+            "cellModel": "NetStim"
+        },
+        "P7frz": {
+            "ynormRange": [
+                -7,
+                7
+            ],
+            "density": 70,
+            "rate": 700,
+            "noise": 1.0,
+            "cellModel": "NetStim"
+        },
+        "P6frz": {
+            "ynormRange": [
+                -6,
+                6
+            ],
+            "density": 60,
+            "rate": 600,
+            "noise": 1.0,
+            "cellModel": "NetStim"
+        }
+    },
+    "connParams": {
+        "frz_C0->P4": {
+            "preConds": {
+                "cellType": "C0",
+                "pop": [
+                    "P0frz",
+                    "P1frz",
+                    "P2frz",
+                    "P3frz"
+                ]
+            },
+            "postConds": {
+                "pop": [
+                    "P4"
+                ]
+            },
+            "weight": -0.4
+        },
+        "frz_P0->C1": {
+            "preConds": {
+                "pop": [
+                    "P0frz"
+                ]
+            },
+            "postConds": {
+                "pop": [
+                    "P4",
+                    "P5"
+                ]
+            },
+            "weight": -0.1
+        },
+        "P1->P5": {
+            "preConds": {
+                "pop": [
+                    "P1"
+                ]
+            },
+            "postConds": {
+                "pop": [
+                    "P5"
+                ]
+            },
+            "weight": 1.5
+        },
+        "P5->P1": {
+            "preConds": {
+                "pop": [
+                    "P5"
+                ]
+            },
+            "postConds": {
+                "pop": [
+                    "P1"
+                ]
+            },
+            "weight": 5.1
+        },
+        "frz_P6->P23": {
+            "preConds": {
+                "pop": [
+                    "P6frz"
+                ]
+            },
+            "postConds": {
+                "pop": [
+                    "P3"
+                ]
+            },
+            "weight": 6.23
+        },
+        "frz_P67->P3": {
+            "preConds": {
+                "pop": [
+                    "P6frz",
+                    "P7frz"
+                ]
+            },
+            "postConds": {
+                "pop": [
+                    "P3"
+                ]
+            },
+            "weight": 67.3
+        }
+    },
+    "meta": "META"
+}

@@ -46,11 +46,13 @@ desc.pops_active = ['P1', 'P3', 'P4', 'P5']
 #desc.pops_active = 'all'
 #desc.conns_frozen = ['C0->P4', 'P1->P5']
 #desc.conns_frozen = 'all'
-desc.conns_frozen = [('P3', 'P4')]
+#desc.conns_frozen = [('P3', 'P4')]
+#desc.conns_frozen = []
+desc.conns_split = {('P1', 'P5'): 0.2, ('P5', 'P1'): 0.1}
 for n in range(8):
     desc.inp_surrogates[f'P{n}'] = {'type': 'irregular', 'rate': n * 100}
 desc.duplicate_active_pops = False
-subnet_name = 'par_sub_6'
+subnet_name = 'par_sub_7'
 
 # Build subnet
 spb = SubnetParamBuilder2()

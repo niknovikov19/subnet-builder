@@ -1,3 +1,5 @@
+import numpy as np
+
 from .netpar_utils import (
     get_conn_pops_presyn, get_conn_pops_postsyn
 )
@@ -38,12 +40,13 @@ def netpar_to_mermaid(net_params: dict, fpath_out: str,
         lines.append(f'    {pop}["{label}"]')
     
     # Connections
-    for conn in net_params['connParams']:
+    for conn, conn_par in net_params['connParams'].items():
         pops_pre = get_conn_pops_presyn(net_params, conn)
         pops_post = get_conn_pops_postsyn(net_params, conn)
+        w = np.round(conn_par['weight'], 4)
         for pre in pops_pre:
             for post in pops_post:
-                lines.append(f'    {pre} -->|{conn}| {post}')
+                lines.append(f'    {pre} -->|{conn} {w}| {post}')
     
     lines.append('```')
     
