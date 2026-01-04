@@ -23,6 +23,7 @@ class SubnetParamBuilder2:
         self.pops_active: list = []
         self.pops_frozen: list = []
         self.conns_info: dict = {}
+        self.pops_pre_all = []
         self.subnet_desc: SubnetDesc = None
         self.netpar_full: dict = {}
         self.netpar_sub: dict = {}
@@ -140,7 +141,7 @@ class SubnetParamBuilder2:
 
     def _copy_conns(self):
         self.pops_frozen = []
-        #self.conns_info = {}
+        self.pops_pre_all = []
 
         for conn in self._get_all_conns():
             pops_pre = self._get_conn_pops_presyn(conn)
@@ -192,8 +193,6 @@ class SubnetParamBuilder2:
                     self.pops_frozen.append(pop)
                     #self.conns_info[conn]['presyn'][pop]['frozen'] = pop_frz
             
-            #conn_par_new['preConds'].pop('cellType', None)   # if preConds were defined by cellType - clean it
-
             # Add the connection to the subnet
             conn_frz = self._gen_frozen_conn_name(conn)
             conn_name_new = {'orig': conn, 'frozen': conn_frz}
@@ -204,6 +203,7 @@ class SubnetParamBuilder2:
                 conn_par_new_['preConds']['pop'] = pops_pre_new[t]   # explicitly define postConds by pop list
                 conn_par_new_['preConds'].pop('cellType', None)   # if preConds were defined by cellType - clean it
                 self.netpar_sub['connParams'][conn_name_new[t]] = conn_par_new_
+                self.pops_pre_all += pops_pre_new[t]   # accumulate pre-synaptic pops.
             
             # Split the connection
             if is_conn_split:
@@ -212,6 +212,7 @@ class SubnetParamBuilder2:
                 self.netpar_sub['connParams'][conn_frz]['weight'] *= (1 - conn_split_k)
         
         self.pops_frozen = list(set(self.pops_frozen))   # remove duplicates
+        self.pops_pre_all = list(set(self.pops_pre_all))   # remove duplicates
     
     def _copy_subconns(self):
         for conn in self._get_all_conns('subConnParams'):
@@ -231,10 +232,10 @@ class SubnetParamBuilder2:
             # Keep active/static/frozen pre-synaptic pops.
             pops_pre_new = []
             for pop in pops_pre:
-                if pop in self.pops_active:   # static pops were also made active in _copy_conns()
+                if pop in self.pops_pre_all:
                     pops_pre_new.append(pop)
-                if pop in self.pops_frozen:
-                    pop_frz = self._gen_frozen_pop_name(pop)
+                pop_frz = self._gen_frozen_pop_name(pop)
+                if pop_frz in self.pops_pre_all:
                     pops_pre_new.append(pop_frz)
             if len(pops_pre_new) == 0:
                 continue   # no sources - skip this sub-connection

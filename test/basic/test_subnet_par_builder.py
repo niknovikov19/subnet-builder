@@ -48,6 +48,8 @@ par['subConnParams']['P123->C1'] = {
     'preConds': {'pop': ['P1', 'P2', 'P3']}, 'postConds': {'cellType': 'C1'}}
 par['subConnParams']['C0->P456'] = {
     'preConds': {'cellType': 'C0'}, 'postConds': {'pop': ['P4', 'P5', 'P6']}}
+par['subConnParams']['P456->P13'] = {
+    'preConds': {'pop': ['P4', 'P5', 'P6']}, 'postConds': {'pop': ['P1', 'P3']}}
 
 # Subnet description
 desc = SubnetDesc()

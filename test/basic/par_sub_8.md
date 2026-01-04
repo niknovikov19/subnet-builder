@@ -18,12 +18,12 @@ graph LR
     P3["P3<br/>C0<br/>HH"]
     P4["P4<br/>C1<br/>HH"]
     P5["P5<br/>C1<br/>HH"]
-    P7frz["P7frz<br/>Rate: 700"]
-    P6frz["P6frz<br/>Rate: 600"]
-    P0frz["P0frz<br/>Rate: 0"]
-    P2frz["P2frz<br/>Rate: 200"]
     P3frz["P3frz<br/>Rate: 300"]
+    P6frz["P6frz<br/>Rate: 600"]
     P1frz["P1frz<br/>Rate: 100"]
+    P0frz["P0frz<br/>Rate: 0"]
+    P7frz["P7frz<br/>Rate: 700"]
+    P2frz["P2frz<br/>Rate: 200"]
     P0frz -->|frz_C0->P4: -0.4| P4
     P1frz -->|frz_C0->P4: -0.4| P4
     P2frz -->|frz_C0->P4: -0.4| P4

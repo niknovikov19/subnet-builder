@@ -36,13 +36,13 @@
             "density": 50,
             "cellType": "C1"
         },
-        "P7frz": {
+        "P3frz": {
             "ynormRange": [
-                -7,
-                7
+                -3,
+                3
             ],
-            "density": 70,
-            "rate": 700,
+            "density": 30,
+            "rate": 300,
             "noise": 1.0,
             "cellModel": "NetStim"
         },
@@ -56,6 +56,16 @@
             "noise": 1.0,
             "cellModel": "NetStim"
         },
+        "P1frz": {
+            "ynormRange": [
+                -1,
+                1
+            ],
+            "density": 10,
+            "rate": 100,
+            "noise": 1.0,
+            "cellModel": "NetStim"
+        },
         "P0frz": {
             "ynormRange": [
                 0,
@@ -66,6 +76,16 @@
             "noise": 1.0,
             "cellModel": "NetStim"
         },
+        "P7frz": {
+            "ynormRange": [
+                -7,
+                7
+            ],
+            "density": 70,
+            "rate": 700,
+            "noise": 1.0,
+            "cellModel": "NetStim"
+        },
         "P2frz": {
             "ynormRange": [
                 -2,
@@ -73,26 +93,6 @@
             ],
             "density": 20,
             "rate": 200,
-            "noise": 1.0,
-            "cellModel": "NetStim"
-        },
-        "P3frz": {
-            "ynormRange": [
-                -3,
-                3
-            ],
-            "density": 30,
-            "rate": 300,
-            "noise": 1.0,
-            "cellModel": "NetStim"
-        },
-        "P1frz": {
-            "ynormRange": [
-                -1,
-                1
-            ],
-            "density": 10,
-            "rate": 100,
             "noise": 1.0,
             "cellModel": "NetStim"
         }
@@ -187,10 +187,8 @@
             "preConds": {
                 "pop": [
                     "P0frz",
-                    "P1",
                     "P1frz",
                     "P2frz",
-                    "P3",
                     "P3frz"
                 ]
             },
@@ -204,10 +202,8 @@
         "P123->C1": {
             "preConds": {
                 "pop": [
-                    "P1",
                     "P1frz",
                     "P2frz",
-                    "P3",
                     "P3frz"
                 ]
             },
@@ -222,10 +218,8 @@
             "preConds": {
                 "pop": [
                     "P0frz",
-                    "P1",
                     "P1frz",
                     "P2frz",
-                    "P3",
                     "P3frz"
                 ]
             },
@@ -233,6 +227,20 @@
                 "pop": [
                     "P4",
                     "P5"
+                ]
+            }
+        },
+        "P456->P13": {
+            "preConds": {
+                "pop": [
+                    "P5",
+                    "P6frz"
+                ]
+            },
+            "postConds": {
+                "pop": [
+                    "P1",
+                    "P3"
                 ]
             }
         }
