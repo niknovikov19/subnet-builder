@@ -35,7 +35,10 @@ def netpar_to_mermaid(net_params: dict, fpath_out: str,
         if "cellType" in params:
             label_parts.append(params['cellType'])
         if "cellModel" in params:
-            label_parts.append(params['cellModel'])
+            if params['cellModel'] == 'NetStim':
+                label_parts.append(f'Rate: {params["rate"]}')
+            else:
+                label_parts.append(params['cellModel'])
         label = "<br/>".join(label_parts)
         lines.append(f'    {pop}["{label}"]')
     
@@ -46,7 +49,7 @@ def netpar_to_mermaid(net_params: dict, fpath_out: str,
         w = np.round(conn_par['weight'], 4)
         for pre in pops_pre:
             for post in pops_post:
-                lines.append(f'    {pre} -->|{conn} {w}| {post}')
+                lines.append(f'    {pre} -->|{conn}: {w}| {post}')
     
     lines.append('```')
     

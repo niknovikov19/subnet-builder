@@ -150,5 +150,39 @@
             "weight": 67.3
         }
     },
+    "subConnParams": {
+        "C0->C1": {
+            "preConds": {
+                "cellType": "C0"
+            },
+            "postConds": {
+                "cellType": "C1"
+            }
+        },
+        "P123->C1": {
+            "preConds": {
+                "pop": [
+                    "P1",
+                    "P2",
+                    "P3"
+                ]
+            },
+            "postConds": {
+                "cellType": "C1"
+            }
+        },
+        "C0->P456": {
+            "preConds": {
+                "cellType": "C0"
+            },
+            "postConds": {
+                "pop": [
+                    "P4",
+                    "P5",
+                    "P6"
+                ]
+            }
+        }
+    },
     "meta": "META"
 }

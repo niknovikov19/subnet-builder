@@ -37,6 +37,7 @@ class SubnetParamBuilder2:
         else:
             self.pops_active = self.subnet_desc.pops_active.copy()
         self._copy_conns()   # self.pops_frozen will be also filled here
+        self._copy_subconns()
         self._copy_active_pops()
         self._create_frozen_pops()
         self._copy_stim_params()
@@ -200,7 +201,8 @@ class SubnetParamBuilder2:
                 if len(pops_pre_new[t]) == 0:
                     continue
                 conn_par_new_ = deepcopy2(conn_par_new)
-                conn_par_new_['preConds']['pop'] = pops_pre_new[t]
+                conn_par_new_['preConds']['pop'] = pops_pre_new[t]   # explicitly define postConds by pop list
+                conn_par_new_['preConds'].pop('cellType', None)   # if preConds were defined by cellType - clean it
                 self.netpar_sub['connParams'][conn_name_new[t]] = conn_par_new_
             
             # Split the connection
@@ -210,6 +212,37 @@ class SubnetParamBuilder2:
                 self.netpar_sub['connParams'][conn_frz]['weight'] *= (1 - conn_split_k)
         
         self.pops_frozen = list(set(self.pops_frozen))   # remove duplicates
+    
+    def _copy_subconns(self):
+        for conn in self._get_all_conns('subConnParams'):
+            pops_pre = self._get_conn_pops_presyn(conn, 'subConnParams')
+            pops_post = self._get_conn_pops_postsyn(conn, 'subConnParams')
+            
+            # Copy of conn params that will be added to the subnet
+            conn_par_new = deepcopy2(self._get_conn_par(conn, 'subConnParams'))
+
+            # Keep active post-synaptic pops. only
+            pops_post_new = [pop for pop in pops_post if self._is_pop_active(pop)]
+            if len(pops_post_new) == 0:
+                continue   # all targets inactive - skip this sub-connection
+            conn_par_new['postConds']['pop'] = pops_post_new   # explicitly define postConds by pop list
+            conn_par_new['postConds'].pop('cellType', None)   # if postConds were defined by cellType - clean it
+
+            # Keep active/static/frozen pre-synaptic pops.
+            pops_pre_new = []
+            for pop in pops_pre:
+                if pop in self.pops_active:   # static pops were also made active in _copy_conns()
+                    pops_pre_new.append(pop)
+                if pop in self.pops_frozen:
+                    pop_frz = self._gen_frozen_pop_name(pop)
+                    pops_pre_new.append(pop_frz)
+            if len(pops_pre_new) == 0:
+                continue   # no sources - skip this sub-connection
+            conn_par_new['preConds']['pop'] = pops_pre_new   # explicitly define preConds by pop list
+            conn_par_new['preConds'].pop('cellType', None)   # if preConds were defined by cellType - clean it
+
+            # Add the sub-connection to the subnet
+            self.netpar_sub['subConnParams'][conn] = conn_par_new
     
     def _copy_active_pops(self):
         print('Copy active pops...')
@@ -273,7 +306,7 @@ class SubnetParamBuilder2:
         # Pop. params common for all types of surrogate input
         par0 = self._make_inp_params_common(pop)
         # Pop. params specific for each surrogate input type
-        if inp_desc['type'] == 'irregular':
+        if ('type' not in inp_desc) or (inp_desc['type'] == 'irregular'):
             par = self._make_inp_params_irregular(pop)
         elif inp_desc['type'] in ('spike_replay', 'spike_replay_jit'):
             par = self._make_inp_params_replay(pop)

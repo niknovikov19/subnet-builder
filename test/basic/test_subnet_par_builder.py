@@ -10,6 +10,7 @@ from subnet_tuner import (
 par = {}
 par['popParams'] = {}
 par['connParams'] = {}
+par['subConnParams'] = {}
 par['meta'] = 'META'
 
 # Populations
@@ -39,20 +40,29 @@ par['connParams']['P6->P23'] = {
 par['connParams']['P67->P3'] = {
     'preConds': {'pop': ['P6', 'P7']}, 'postConds': {'pop': 'P3'}, 'weight': 67.3}
 
+# Sub-connections
+par['subConnParams']['C0->C1'] = {
+    'preConds': {'cellType': 'C0'}, 'postConds': {'cellType': 'C1'}}
+# Sub-connections
+par['subConnParams']['P123->C1'] = {
+    'preConds': {'pop': ['P1', 'P2', 'P3']}, 'postConds': {'cellType': 'C1'}}
+par['subConnParams']['C0->P456'] = {
+    'preConds': {'cellType': 'C0'}, 'postConds': {'pop': ['P4', 'P5', 'P6']}}
+
 # Subnet description
 desc = SubnetDesc()
 desc.pops_active = ['P1', 'P3', 'P4', 'P5']
 #desc.pops_active = ['P0', 'P7', 'P3']
 #desc.pops_active = 'all'
-#desc.conns_frozen = ['C0->P4', 'P1->P5']
+desc.conns_frozen = ['C0->P4', 'P1->P5']
 #desc.conns_frozen = 'all'
 #desc.conns_frozen = [('P3', 'P4')]
 #desc.conns_frozen = []
-desc.conns_split = {('P1', 'P5'): 0.2, ('P5, P1'): 0.1}
+#desc.conns_split = {('P1', 'P5'): 0.2, ('P5, P1'): 0.1}
 for n in range(8):
     desc.inp_surrogates[f'P{n}'] = {'type': 'irregular', 'rate': n * 100}
 desc.duplicate_active_pops = False
-subnet_name = 'par_sub_7'
+subnet_name = 'par_sub_8'
 
 # Build subnet
 spb = SubnetParamBuilder2()
