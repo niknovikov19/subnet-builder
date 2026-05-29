@@ -1,0 +1,77 @@
+{
+  "popParams": {
+    "P1": {
+      "cellModel": "HH"
+    },
+    "P2": {
+      "cellModel": "HH"
+    },
+    "P3": {
+      "cellModel": "HH"
+    },
+    "P1frz": {
+      "rate": 10,
+      "noise": 1.0,
+      "cellModel": "NetStim"
+    },
+    "P2frz": {
+      "rate": 20,
+      "noise": 1.0,
+      "cellModel": "NetStim"
+    }
+  },
+  "connParams": {
+    "frz_P1->P1": {
+      "preConds": {
+        "pop": [
+          "P1frz"
+        ]
+      },
+      "postConds": {
+        "pop": [
+          "P1"
+        ]
+      },
+      "weight": 1
+    },
+    "P1->P2": {
+      "preConds": {
+        "pop": [
+          "P1"
+        ]
+      },
+      "postConds": {
+        "pop": [
+          "P2"
+        ]
+      },
+      "weight": 2
+    },
+    "frz_P2->P3": {
+      "preConds": {
+        "pop": [
+          "P2frz"
+        ]
+      },
+      "postConds": {
+        "pop": [
+          "P3"
+        ]
+      },
+      "weight": 3
+    },
+    "P3->P3": {
+      "preConds": {
+        "pop": [
+          "P3"
+        ]
+      },
+      "postConds": {
+        "pop": [
+          "P3"
+        ]
+      },
+      "weight": 4
+    }
+  }
+}
