@@ -208,8 +208,9 @@ class SubnetParamBuilder2:
             # Split the connection
             if is_conn_split:
                 # TODO: check that the weight is numerical
-                self.netpar_sub['connParams'][conn]['weight'] *= conn_split_k
-                self.netpar_sub['connParams'][conn_frz]['weight'] *= (1 - conn_split_k)
+                #self.netpar_sub['connParams'][conn]['weight'] *= conn_split_k
+                #self.netpar_sub['connParams'][conn_frz]['weight'] *= (1 - conn_split_k)
+                pass
         
         self.pops_frozen = list(set(self.pops_frozen))   # remove duplicates
         self.pops_pre_all = list(set(self.pops_pre_all))   # remove duplicates
